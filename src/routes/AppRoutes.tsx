@@ -5,6 +5,7 @@ import DoctorLayout from '../layouts/DoctorLayout';
 
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import ForgotPassword from '../pages/auth/ForgotPassword';
 import PatientDashboard from '../pages/patient/PatientDashboard';
 import PatientProfile from '../pages/patient/PatientProfile';
 import PatientProfileEdit from '../pages/patient/PatientProfileEdit';
@@ -30,6 +31,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* PROTECTED Routes wrapped inside MainLayout */}

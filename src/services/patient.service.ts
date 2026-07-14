@@ -11,6 +11,11 @@ export const updatePatientProfile = async (data: UpdateProfileRequest): Promise<
   return response.data;
 };
 
+export const changePassword = async (data: any): Promise<any> => {
+  const response = await axiosClient.put(`/users/me/password`, data);
+  return response.data;
+};
+
 export const getPatientAppointments = async (): Promise<Appointment[]> => {
   const response = await axiosClient.get<PageResponse<Appointment>>('/appointments/my');
   return response.data.content;

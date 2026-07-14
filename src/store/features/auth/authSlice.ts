@@ -35,6 +35,22 @@ export const registerThunk = createAsyncThunk(
   }
 );
 
+export const verifyOtpThunk = createAsyncThunk(
+  'auth/verifyOtp',
+  async (data: import('../../../types/auth').VerifyOtpRequest, { rejectWithValue }) => {
+    try {
+      const { verifyOtp } = await import('../../../services/auth.service');
+      const response = await verifyOtp(data);
+      setToken(response.token);
+      if (response.role) setRole(response.role);
+      if (response.fullName) setName(response.fullName);
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Invalid OTP');
+    }
+  }
+);
+
 const initialState: AuthState = {
   token: getToken(),
   role: getRole(),
@@ -87,6 +103,22 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(registerThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Verify OTP
+      .addCase(verifyOtpThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyOtpThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.token = action.payload.token;
+        state.role = action.payload.role || null;
+        state.fullName = action.payload.fullName || null;
+      })
+      .addCase(verifyOtpThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

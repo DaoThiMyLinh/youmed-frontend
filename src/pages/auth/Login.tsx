@@ -41,7 +41,7 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-extrabold text-gradient drop-shadow-sm tracking-tight">YOUMED</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardDescription>Nhập thông tin của bạn để đăng nhập</CardDescription>
         </CardHeader>
         <CardContent>
           <ErrorMessage message={error} className="mb-4" />
@@ -49,7 +49,7 @@ const Login = () => {
             <FormField label="Email" required>
               <Input
                 type="email"
-                placeholder="name@example.com"
+                placeholder="vidu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -57,24 +57,29 @@ const Login = () => {
               />
             </FormField>
 
-            <FormField label="Password" required>
-              <PasswordInput
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+            <FormField label="Mật khẩu" required>
+              <div className="flex flex-col gap-1">
+                <PasswordInput
+                  placeholder="Nhập mật khẩu của bạn"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+                <div className="flex justify-end mt-1">
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline font-medium">Quên mật khẩu?</Link>
+                </div>
+              </div>
             </FormField>
 
             <Button type="submit" className="w-full mt-2" isLoading={loading}>
-              Sign In
+              Đăng Nhập
             </Button>
           </form>
         </CardContent>
         <CardFooter className="justify-center">
           <p className="text-sm text-slate-600">
-            Don't have an account? <Link to="/register" className="text-primary hover:underline font-medium">Register here</Link>
+            Bạn chưa có tài khoản? <Link to="/register" className="text-primary hover:underline font-medium">Đăng ký tại đây</Link>
           </p>
         </CardFooter>
       </Card>

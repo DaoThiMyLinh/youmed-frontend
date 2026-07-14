@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, FormField, Input, Button, ErrorMessage, Toast } from '../../components';
+import { Card, CardHeader, CardTitle, CardContent, FormField, Input, PasswordInput, Button, ErrorMessage, Toast } from '../../components';
 import { updateProfileThunk, selectPatientProfile, selectPatientLoading, selectPatientError, selectPatientUpdateSuccess, resetUpdateSuccess } from '../../store/features/patient/patientSlice';
+import { changePassword } from '../../services/patient.service';
 import { selectUserRole } from '../../store/features/auth/authSlice';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +24,15 @@ const PatientProfileEdit = () => {
     gender: '',
     dateOfBirth: '',
   });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState<string | null>(null);
+  const [pwdSuccess, setPwdSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (profile) {
@@ -50,9 +60,44 @@ const PatientProfileEdit = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(updateProfileThunk(formData as any));
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdError(null);
+    setPwdSuccess(null);
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPwdError('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setPwdError('Mật khẩu mới phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+      setPwdSuccess('Đổi mật khẩu thành công');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setTimeout(() => setPwdSuccess(null), 3000);
+    } catch (err: any) {
+      setPwdError(err.response?.data?.message || 'Lỗi khi đổi mật khẩu');
+    } finally {
+      setPwdLoading(false);
+    }
   };
 
   return (
@@ -132,12 +177,61 @@ const PatientProfileEdit = () => {
               </FormField>
             </div>
 
-            <div className="pt-4 flex justify-end">
-              <Button type="submit" isLoading={loading}>{t('common.save')}</Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="pt-4 flex justify-end">
+                <Button type="submit" isLoading={loading}>{t('common.save')}</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Đổi mật khẩu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {pwdSuccess && <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md border border-green-200">{pwdSuccess}</div>}
+            <ErrorMessage message={pwdError} className="mb-6" />
+            
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <FormField label="Mật khẩu hiện tại" required>
+                <PasswordInput 
+                  name="currentPassword"
+                  placeholder="Nhập mật khẩu hiện tại"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  required
+                  disabled={pwdLoading}
+                />
+              </FormField>
+
+              <FormField label="Mật khẩu mới" required>
+                <PasswordInput 
+                  name="newPassword"
+                  placeholder="Tạo mật khẩu mới"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  required
+                  disabled={pwdLoading}
+                />
+              </FormField>
+
+              <FormField label="Xác nhận mật khẩu mới" required>
+                <PasswordInput 
+                  name="confirmPassword"
+                  placeholder="Nhập lại mật khẩu mới"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  required
+                  disabled={pwdLoading}
+                />
+              </FormField>
+
+              <div className="pt-4 flex justify-end">
+                <Button type="submit" variant="outline" className="border-primary text-primary hover:bg-primary/5" isLoading={pwdLoading}>Cập nhật mật khẩu</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
     </div>
   );
 };
