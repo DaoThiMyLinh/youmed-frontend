@@ -13,7 +13,7 @@ export interface ScheduleModel {
   workingDate: string; // YYYY-MM-DD
   startTime: string; // HH:mm:ss
   endTime: string; // HH:mm:ss
-  status: 'ACTIVE' | 'INACTIVE';
+  active: boolean;
   slots?: TimeSlot[];
 }
 

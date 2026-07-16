@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardHeader, CardTitle, CardContent, Badge, Button, Loading, EmptyState } from '../../components';
 import { FiCalendar, FiClock, FiActivity, FiFileText } from 'react-icons/fi';
-import { fetchProfileThunk, fetchAppointmentsThunk, selectPatientProfile, selectPatientAppointments, selectPatientLoading } from '../../store/features/patient/patientSlice';
+import { fetchProfileThunk, fetchAppointmentsThunk, cancelAppointmentThunk, selectPatientProfile, selectPatientAppointments, selectPatientLoading } from '../../store/features/patient/patientSlice';
 import { selectUserName } from '../../store/features/auth/authSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const PatientDashboard = () => {
@@ -14,6 +14,13 @@ const PatientDashboard = () => {
   const appointments = useSelector(selectPatientAppointments);
   const loading = useSelector(selectPatientLoading);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleCancelAppointment = (id: number) => {
+    if (window.confirm(t('common.confirmCancel') || 'Bạn có chắc chắn muốn hủy cuộc hẹn này không?')) {
+      dispatch(cancelAppointmentThunk(id));
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchProfileThunk());
@@ -124,8 +131,8 @@ const PatientDashboard = () => {
                   <p className="text-sm text-slate-500 line-clamp-2">{t('appointment.reason')}: {upcomingAppointment.reason}</p>
 
                   <div className="mt-4 flex gap-3">
-                    <Button variant="outline" size="sm">{t('appointment.reschedule')}</Button>
-                    <Button variant="danger" size="sm">{t('appointment.cancel')}</Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/booking?reschedule=${upcomingAppointment.id}`)}>{t('appointment.reschedule')}</Button>
+                    <Button variant="danger" size="sm" onClick={() => handleCancelAppointment(upcomingAppointment.id)}>{t('appointment.cancel')}</Button>
                   </div>
                 </div>
               </div>

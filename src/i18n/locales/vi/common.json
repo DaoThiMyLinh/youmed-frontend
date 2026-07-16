@@ -80,7 +80,16 @@
   "schedule": {
     "generatedSlots": "Danh sách Ca khám",
     "booked": "Đã đặt",
-    "available": "Trống"
+    "available": "Trống",
+    "add": "Thêm Lịch Làm Việc",
+    "workingDate": "Ngày làm việc",
+    "startTime": "Giờ bắt đầu",
+    "endTime": "Giờ kết thúc",
+    "noData": "Chưa có lịch làm việc nào. Hãy tạo một lịch mới.",
+    "noSlots": "Chưa có ca khám nào được tạo cho lịch này.",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa lịch làm việc này?",
+    "active": "Đang hoạt động",
+    "inactive": "Ngừng hoạt động"
   },
   "booking": {
     "title": "Đặt Lịch Khám",

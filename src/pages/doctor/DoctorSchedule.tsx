@@ -60,7 +60,7 @@ const DoctorSchedule = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this schedule?')) return;
+    if (!window.confirm(t('schedule.confirmDelete', 'Bạn có chắc chắn muốn xóa lịch làm việc này?'))) return;
     try {
       await scheduleService.deleteSchedule(id);
       fetchSchedules();
@@ -103,12 +103,12 @@ const DoctorSchedule = () => {
       {isAdding && (
         <Card className="border-primary/20 bg-primary/5">
           <CardHeader>
-            <CardTitle className="text-lg">Add New Schedule</CardTitle>
+            <CardTitle className="text-lg">{t('schedule.add', 'Thêm Lịch Làm Việc')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAddSubmit} className="flex flex-wrap gap-4 items-end">
-              <div className="space-y-1.5 flex-1 min-w-[200px]">
-                <label className="text-sm font-medium text-slate-700">Working Date</label>
+            <form onSubmit={handleAddSubmit} className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-end">
+              <div className="space-y-1.5 flex-1 w-full sm:w-auto sm:min-w-[200px]">
+                <label className="text-sm font-medium text-slate-700">{t('schedule.workingDate', 'Ngày làm việc')}</label>
                 <Input 
                   type="date" 
                   value={workingDate} 
@@ -116,8 +116,8 @@ const DoctorSchedule = () => {
                   required 
                 />
               </div>
-              <div className="space-y-1.5 flex-1 min-w-[150px]">
-                <label className="text-sm font-medium text-slate-700">Start Time</label>
+              <div className="space-y-1.5 flex-1 w-full sm:w-auto sm:min-w-[150px]">
+                <label className="text-sm font-medium text-slate-700">{t('schedule.startTime', 'Giờ bắt đầu')}</label>
                 <Input 
                   type="time" 
                   value={startTime} 
@@ -125,8 +125,8 @@ const DoctorSchedule = () => {
                   required 
                 />
               </div>
-              <div className="space-y-1.5 flex-1 min-w-[150px]">
-                <label className="text-sm font-medium text-slate-700">End Time</label>
+              <div className="space-y-1.5 flex-1 w-full sm:w-auto sm:min-w-[150px]">
+                <label className="text-sm font-medium text-slate-700">{t('schedule.endTime', 'Giờ kết thúc')}</label>
                 <Input 
                   type="time" 
                   value={endTime} 
@@ -134,8 +134,8 @@ const DoctorSchedule = () => {
                   required 
                 />
               </div>
-              <Button type="submit" isLoading={isSubmitting}>
-                Save Schedule
+              <Button type="submit" isLoading={isSubmitting} className="w-full sm:w-auto mt-2 sm:mt-0">
+                {t('common.save', 'Lưu Lịch')}
               </Button>
             </form>
           </CardContent>
@@ -143,7 +143,8 @@ const DoctorSchedule = () => {
       )}
 
       <Card>
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-slate-700 uppercase bg-slate-50 border-b">
               <tr>
@@ -157,7 +158,7 @@ const DoctorSchedule = () => {
               {schedules.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
-                    No schedules found. Create one to get started.
+                    {t('schedule.noData', 'Chưa có lịch làm việc nào. Hãy tạo một lịch mới.')}
                   </td>
                 </tr>
               ) : (
@@ -170,33 +171,78 @@ const DoctorSchedule = () => {
                       {schedule.startTime} - {schedule.endTime}
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={schedule.status === 'ACTIVE' ? 'success' : 'secondary'}>
-                        {schedule.status}
+                      <Badge className="whitespace-nowrap" variant={schedule.active ? 'success' : 'secondary'}>
+                        {schedule.active ? t('schedule.active', 'Đang hoạt động') : t('schedule.inactive', 'Ngừng hoạt động')}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        leftIcon={<FiEye />}
-                        onClick={() => handleViewSlots(schedule)}
-                      >
-                        {t('common.view')}
-                      </Button>
-                      <Button 
-                        variant="danger" 
-                        size="sm" 
-                        leftIcon={<FiTrash2 />}
-                        onClick={() => handleDelete(schedule.id)}
-                      >
-                        {t('common.delete')}
-                      </Button>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col sm:flex-row justify-end gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          leftIcon={<FiEye />}
+                          onClick={() => handleViewSlots(schedule)}
+                        >
+                          {t('common.view')}
+                        </Button>
+                        <Button 
+                          variant="danger" 
+                          size="sm" 
+                          leftIcon={<FiTrash2 />}
+                          onClick={() => handleDelete(schedule.id)}
+                        >
+                          {t('common.delete')}
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Stacked View */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-100">
+          {schedules.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+              {t('schedule.noData', 'Chưa có lịch làm việc nào. Hãy tạo một lịch mới.')}
+            </div>
+          ) : (
+            schedules.map((schedule) => (
+              <div key={schedule.id} className="p-4 space-y-3 hover:bg-slate-50/50 transition-colors">
+                <div className="flex justify-between items-center">
+                  <div className="font-bold text-slate-900 text-base">{schedule.workingDate}</div>
+                  <Badge variant={schedule.active ? 'success' : 'secondary'}>
+                    {schedule.active ? t('schedule.active', 'Đang hoạt động') : t('schedule.inactive', 'Ngừng hoạt động')}
+                  </Badge>
+                </div>
+                <div className="text-slate-600 text-sm font-medium">
+                  {schedule.startTime} - {schedule.endTime}
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 justify-center"
+                    leftIcon={<FiEye />}
+                    onClick={() => handleViewSlots(schedule)}
+                  >
+                    {t('common.view')}
+                  </Button>
+                  <Button 
+                    variant="danger" 
+                    size="sm" 
+                    className="flex-1 justify-center"
+                    leftIcon={<FiTrash2 />}
+                    onClick={() => handleDelete(schedule.id)}
+                  >
+                    {t('common.delete')}
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </Card>
 
@@ -225,7 +271,7 @@ const DoctorSchedule = () => {
                 </div>
               ) : slots.length === 0 ? (
                 <div className="text-center py-8 text-slate-500">
-                  No slots generated for this schedule.
+                  {t('schedule.noSlots', 'Chưa có ca khám nào được tạo cho lịch này.')}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

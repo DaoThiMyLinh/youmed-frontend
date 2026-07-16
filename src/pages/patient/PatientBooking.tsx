@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, Button, Toast, ErrorMessage, Loading } from '../../components';
 import { fetchDoctorsThunk, fetchSpecialtiesThunk, fetchTimeSlotsThunk, submitAppointmentThunk, selectDoctors, selectSpecialties, selectAppointmentLoading, selectAppointmentError, selectBookingSuccess, resetBookingSuccess } from '../../store/features/appointment/appointmentSlice';
 import { FiUser, FiCalendar, FiClock, FiCheckCircle } from 'react-icons/fi';
 import type { Doctor, TimeSlot } from '../../types/appointment';
 import type { Specialty } from '../../types/specialty';
 import { useTranslation } from 'react-i18next';
+import { cancelAppointmentThunk } from '../../store/features/patient/patientSlice';
 
 const PatientBooking = () => {
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const rescheduleId = searchParams.get('reschedule');
   const { t } = useTranslation();
 
   const doctors = useSelector(selectDoctors);
@@ -34,13 +37,16 @@ const PatientBooking = () => {
 
   useEffect(() => {
     if (success) {
+      if (rescheduleId) {
+        dispatch(cancelAppointmentThunk(Number(rescheduleId)));
+      }
       const timer = setTimeout(() => {
         dispatch(resetBookingSuccess());
         navigate('/appointments');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [success, navigate, dispatch]);
+  }, [success, navigate, dispatch, rescheduleId]);
 
   const handleNextStep = () => setStep(prev => prev + 1);
   const handlePrevStep = () => setStep(prev => prev - 1);

@@ -80,7 +80,16 @@
   "schedule": {
     "generatedSlots": "Generated Slots",
     "booked": "Booked",
-    "available": "Available"
+    "available": "Available",
+    "add": "Add New Schedule",
+    "workingDate": "Working Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "noData": "No schedules found. Create one to get started.",
+    "noSlots": "No slots generated for this schedule.",
+    "confirmDelete": "Are you sure you want to delete this schedule?",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "booking": {
     "title": "Book an Appointment",
